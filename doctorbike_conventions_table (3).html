@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convenzioni Doctorbike - Report Completo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .filters {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        select, input {
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .status-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .status-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-btn.all {
+            background: #6c757d;
+            color: white;
+        }
+
+        .status-btn.all.active {
+            background: #495057;
+        }
+
+        .status-btn.confirmed {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-btn.confirmed.active {
+            background: #1e7e34;
+        }
+
+        .status-btn.pending {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .status-btn.pending.active {
+            background: #d39e00;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 0 30px 30px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .table th {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        .table tr:hover {
+            background: rgba(52, 152, 219, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .company-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .location-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 5px;
+            display: inline-block;
+        }
+
+        .discount-highlight {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .content-preview {
+            max-width: 300px;
+            overflow: hidden;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .expand-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .expand-btn:hover {
+            background: #138496;
+        }
+
+        .expanded-content {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #17a2b8;
+            font-size: 13px;
+            line-height: 1.4;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 18px;
+        }
+
+        .export-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: auto;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background: #218838;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                justify-content: space-between;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                margin: 15px;
+            }
+
+            .table-container {
+                padding: 0 15px 15px;
+            }
+
+            .table th,
+            .table td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+
+            .content-preview {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚴‍♂️ Report Convenzioni Doctorbike</h1>
+            <p>Gestione completa delle convenzioni aziendali - Roma &amp; Italia</p>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label>Stato:</label>
+                <div class="status-buttons">
+                    <button class="status-btn all active" data-status="all">Tutte</button>
+                    <button class="status-btn confirmed" data-status="confirmed">Confermate</button>
+                    <button class="status-btn pending" data-status="pending">In Attesa</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>Cerca:</label>
+                <input type="text" id="searchInput" placeholder="Cerca per azienda...">
+            </div>
+            <div class="filter-group">
+                <label>Località:</label>
+                <select id="locationFilter">
+                    <option value="">Tutte le località</option>
+                    <option value="ROMA">Roma</option>
+                    <option value="ITALIA">Italia</option>
+                    <option value="MILANO">Milano</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Sconto:</label>
+                <select id="discountFilter">
+                    <option value="">Tutti gli sconti</option>
+                    <option value="10%">10%</option>
+                    <option value="20%">20%</option>
+                    <option value="Standard">Standard</option>
+                </select>
+            </div>
+            <button class="export-btn" onclick="exportToCSV()">📊 Esporta CSV</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalConventions">29</div>
+                <div class="stat-label">Totale Convenzioni</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="confirmedConventions">17</div>
+                <div class="stat-label">Confermate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingConventions">12</div>
+                <div class="stat-label">In Attesa</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="romaConventions">27</div>
+                <div class="stat-label">Roma</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="italiaConventions">2</div>
+                <div class="stat-label">Italia</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="table" id="conventionsTable">
+                <thead>
+                    <tr>
+                        <th>Azienda</th>
+                        <th>Località</th>
+                        <th>Stato</th>
+                        <th>Sconto</th>
+                        <th>Contenuto Convenzione</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- I dati vengono inseriti tramite JavaScript -->
+                </tbody>
+            </table>
+            
+            <div class="no-results hidden" id="noResults">
+                <p>🔍 Nessuna convenzione trovata con i filtri applicati.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database completo delle convenzioni Doctorbike
+        const conventions = [
+            // CONVENZIONI CONFERMATE - ITALIA
+            {
+                company: "LEONARDO",
+                location: "ITALIA",
+                status: "confirmed",
+                content: "Applicazione su tutta Italia, a parte Roma, del LISTINO AL PUBBLICO CICLOFFICINE DOCTORBIKE (senza scontistica del 20%, ma evita l'applicazione del listino affiliati) per lavorazioni e tagliandi. Tariffe valide sia su interventi in ciclo oppure su strada/domicilio al quale si dovranno aggiungere sempre i supplementi di chiamata e ritiro e riconsegna",
+                details: "Listino pubblico senza scontistica 20% ma evita listino affiliati",
+                notes: "Confermato fino a Giugno 2024. LISTINO DI RIFERIMENTO (PUBBLICO DOCTORBIKE vecchio - senza ricambi). Da inviare: nuova proposta servizi Doctorbike 2024 e convenzione sui servizi noleggio e bike friendly",
+                discount: "Standard"
+            },
+            {
+                company: "JUST EAT",
+                location: "ITALIA",
+                status: "confirmed",
+                content: "Inviato listino NUOVO UNICO DOCTORBIKE con scontistica 10% applicata su Roma e Italia e supplementi di chiamata/Ritiro e riconsegna a parte. Pacchetto manutenzione/revisione: tariffa dedicata ai vostri dipendenti di 60,00€ a bicicletta (ricambistica eventuale da sostituire da considerarsi a parte). La tariffa speciale sarà riconosciuta soltanto in caso di prenotazione mediante l'App Doctorbike. Scontistica courrier Just Eat per l'acquisto di e-bikes ricondizionate: 15% sui seguenti prezzi e modelli. Categoria Standard: Atala E-Run 670€, Premium: Atala B-Cross 1350€",
+                details: "Scontistica courrier Just Eat per l'acquisto di e-bikes ricondizionate: 15%",
+                notes: "LISTINO DI RIFERIMENTO PUBBLICO DOCTORBIKE con scontistica 10% (con ricambi). Pacchetto manutenzione 60€ include: regolazione cambio, pulizia trasmissione, lubrificazione, regolazione freni, controlli",
+                discount: "10%"
+            },
+            
+            // CONVENZIONI CONFERMATE - ROMA
+            {
+                company: "SARA ASSICURAZIONI",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione per DIPENDENTI SARA ASSICURAZIONI (ROMA). A) Interventi di riparazione effettuati c/o le nostre ciclofficine Doctorbike: confermiamo la scontistica del 20% come indicato nel LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). B) Interventi di riparazione effettuati c/o la vostra azienda o domicilio del vostro dipendente: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). A tale scontistica si dovrà aggiungere un supplemento di 15€ per la chiamata del ciclomeccanico o 25€ in caso si necessiti di ritiro e riconsegna del mezzo a domicilio",
+                details: "Scontistica 20% + supplementi chiamata",
+                notes: "Confermata valida fino a Luglio 2024. LISTINO CONVENZIONE 20% ROMA (vecchio - senza costi ricambi e chiamata). A scadenza: inviare nuovo listino con 10% convenzione + costi chiamata aggiornati",
+                discount: "20%"
+            },
+            {
+                company: "CRAL ADR",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione per DIPENDENTI CRAL ADR (ROMA). A) Interventi di riparazione effettuati c/o le nostre ciclofficine Doctorbike: confermiamo la scontistica del 20% come indicato nel LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). B) Interventi di riparazione effettuati c/o la vostra azienda o domicilio del vostro dipendente: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). A tale scontistica si dovrà aggiungere un supplemento di 15€ per la chiamata del ciclomeccanico o 25€ in caso si necessiti di ritiro e riconsegna del mezzo a domicilio",
+                details: "Scontistica 20% per dipendenti CRAL ADR",
+                notes: "Convenzione valida fino a Settembre 2024. LISTINO CONVENZIONE 20% ROMA (nuovo con ricambi/costi chiamata vecchi). A scadenza: inviare nuovo listino con 10% convenzione + costi chiamata aggiornati",
+                discount: "20%"
+            },
+            {
+                company: "UNIVERSITA TELEMATICA UNINETTUNO",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione universitaria con scontistica dedicata per studenti, docenti e personale. Servizi di manutenzione e riparazione biciclette con tariffe agevolate presso ciclofficine Doctorbike. Accesso tramite App Doctorbike con codice dedicato",
+                details: "Convenzione universitaria con tariffe agevolate",
+                notes: "Convenzione attiva per comunità universitaria. Servizi completi per studenti, docenti e personale",
+                discount: "10%"
+            },
+            {
+                company: "UNIVERSITA LA SAPIENZA",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione per la comunità universitaria de La Sapienza. Scontistica del 20% su tutti i servizi di manutenzione e riparazione biciclette per studenti, docenti e personale universitario. Interventi presso ciclofficine e servizi a domicilio",
+                details: "Convenzione universitaria La Sapienza",
+                notes: "Scontistica 20% per comunità universitaria. Servizi completi di manutenzione presso ciclofficine e a domicilio",
+                discount: "20%"
+            },
+            {
+                company: "ABI",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione ABI per servizi di manutenzione biciclette con scontistica dedicata. Interventi presso ciclofficine e servizi a domicilio con tariffe agevolate. Prenotazione tramite App Doctorbike",
+                details: "Convenzione ABI con scontistica 10%",
+                notes: "Servizi completi di manutenzione e riparazione. Accesso tramite App con codice dedicato",
+                discount: "10%"
+            },
+            {
+                company: "HIGH SCHOOL",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione per istituti scolastici superiori. Scontistica dedicata per studenti e personale scolastico su tutti i servizi di manutenzione biciclette. Interventi presso ciclofficine con possibilità di servizi presso istituti",
+                details: "Convenzione scuole superiori",
+                notes: "Tariffe agevolate per studenti e personale. Possibilità di interventi presso istituti scolastici",
+                discount: "10%"
+            },
+            {
+                company: "AIFA",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione AIFA (Agenzia Italiana del Farmaco) per dipendenti. Scontistica del 10% su tutti i servizi di manutenzione e riparazione biciclette. Interventi presso ciclofficine e possibilità di servizi presso sede aziendale",
+                details: "Convenzione AIFA dipendenti",
+                notes: "Scontistica 10% per dipendenti AIFA. Servizi presso ciclofficine e sede aziendale",
+                discount: "10%"
+            },
+            {
+                company: "CNR",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione CNR (Consiglio Nazionale delle Ricerche) per dipendenti e collaboratori. Scontistica del 10% su tutti i servizi presso ciclofficine Doctorbike. Possibilità di interventi presso sedi CNR",
+                details: "Convenzione CNR dipendenti e collaboratori",
+                notes: "Servizi completi con scontistica 10%. Interventi presso ciclofficine e sedi CNR",
+                discount: "10%"
+            },
+            {
+                company: "OSPEDALE BAMBINO GESÙ",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione dipendenti OSPEDALE BAMBINO GESÙ (ROMA). A) Interventi di riparazione effettuati c/o le nostre ciclofficine Doctorbike: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). B) Interventi di riparazione effettuati c/o la vostra azienda o domicilio del vostro dipendente: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). A tale scontistica si dovrà aggiungere un supplemento di 15€ per la chiamata del ciclomeccanico o 25,00€ in caso si necessiti di ritiro e riconsegna del mezzo a domicilio",
+                details: "Scontistica 20% per dipendenti ospedale pediatrico",
+                notes: "Convenzione ospedaliera confermata con supplementi chiamata 15€ o ritiro/riconsegna 25€",
+                discount: "20%"
+            },
+            {
+                company: "ADORNA",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione per DIPENDENTI ADORNA. A) Interventi di riparazione effettuati c/o le nostre ciclofficine Doctorbike: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). B) Interventi di riparazione effettuati c/o la vostra azienda o domicilio del vostro dipendente: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). A tale scontistica si dovrà aggiungere un supplemento di 15€ per la chiamata del ciclomeccanico o 25,00€ in caso si necessiti di ritiro e riconsegna del mezzo a domicilio",
+                details: "Scontistica 20% per dipendenti Adorna",
+                notes: "Convenzione aziendale confermata con supplementi chiamata 15€ o ritiro/riconsegna 25€",
+                discount: "20%"
+            },
+            {
+                company: "BICIPA",
+                location: "ROMA",
+                status: "confirmed",
+                content: "CONVENZIONE INTERVENTI BICIPA (ROMA). A) Interventi di riparazione effettuati c/o le nostre ciclofficine Doctorbike: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). B) Interventi di riparazione effettuati c/o la vostra azienda o domicilio del vostro dipendente: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). A tale scontistica si dovrà aggiungere un supplemento di 15€ per la chiamata del ciclomeccanico o 25,00€ in caso si necessiti di ritiro e riconsegna del mezzo a domicilio",
+                details: "Scontistica 20% per servizi BICIPA",
+                notes: "Convenzione confermata con supplementi chiamata 15€ o ritiro/riconsegna 25€",
+                discount: "20%"
+            },
+            {
+                company: "GSE",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione per DIPENDENTI GSE. A) Interventi di riparazione effettuati c/o le nostre ciclofficine Doctorbike: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). B) Interventi di riparazione effettuati c/o la vostra azienda o domicilio del vostro dipendente: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). A tale scontistica si dovrà aggiungere un supplemento di 15€ per la chiamata del ciclomeccanico o 25,00€ in caso si necessiti di ritiro e riconsegna del mezzo a domicilio",
+                details: "Scontistica 20% per dipendenti GSE (Gestore Servizi Energetici)",
+                notes: "Convenzione aziendale confermata con supplementi chiamata 15€ o ritiro/riconsegna 25€",
+                discount: "20%"
+            },
+            {
+                company: "ANSA",
+                location: "ROMA",
+                status: "confirmed",
+                content: "La convenzione ANSA prevede una scontistica del 20% sul listino al pubblico Doctorbike per i servizi di assistenza tecnica, noleggio e acquisto. ASSISTENZA TECNICA BIKE/E-BIKE: Direttamente presso le ciclofficine Doctorbike in Via del Gesù n. 91 e Via Filippi n. 57 a Roma, Tramite App Doctorbike. NOLEGGIO BIKE/E-BIKE: Direttamente presso la ciclofficina Doctorbike in Via del Gesù n. 91 di Roma, Prenotando tramite e-mail (assistenza@doctorbikeitalia.com) o whatsapp (3518550200). ACQUISTO BIKE/E-BIKE/MONOPATTINI: Presso ciclofficine con scontistica 20% anche su accessori e assicurazioni. La scontistica del 20% sarà applicata anche per elementi accessori alla vendita quale assicurazione furto 12 mesi (per i soli mezzi ebike), assicurazione RC e spese mediche legali 12 mesi. Per l'applicazione della scontistica dovrà essere indicato il codice interno ANSAbike",
+                details: "Scontistica 20% su assistenza, noleggio e acquisto - Codice: ANSAbike",
+                notes: "Convenzione completa confermata. Include bike, caschetto, lucchetto e polizze RC. La tariffa di noleggio include bike, caschetto e lucchetto. Reportistica annuale prevista",
+                discount: "20%"
+            },
+            {
+                company: "CIRCOLO PALAZZO MADAMA",
+                location: "ROMA",
+                status: "confirmed",
+                content: "Convenzione per DIPENDENTI CIRCOLO PALAZZO MADAMA. A) Interventi di riparazione effettuati c/o le nostre ciclofficine Doctorbike: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). B) Interventi di riparazione effettuati c/o la vostra azienda o domicilio del vostro dipendente: confermiamo la scontistica del 20% come indicato nel nostro LISTINO CICLOFFICINE E CONVENZIONI (Iva & ricambi esclusi). A tale scontistica si dovrà aggiungere un supplemento di 15€ per la chiamata del ciclomeccanico o 25,00€ in caso si necessiti di ritiro e riconsegna del mezzo a domicilio",
+                details: "Scontistica 20% per dipendenti Senato della Repubblica",
+                notes: "Convenzione istituzionale confermata con supplementi chiamata 15€ o ritiro/riconsegna 25€",
+                discount: "20%"
+            },
+
+            // CONVENZIONI IN ATTESA
+            {
+                company: "WIND TRE",
+                location: "ROMA",
+                status: "pending",
+                content: "Su tutti gli interventi che i dipendenti prenoteranno tramite l'App Doctorbike nelle nostre ciclofficine, su strada, c/o il domicilio del dipendente o in sede aziendale garantiamo il 10% di sconto al netto di Iva e ricambi (listino interventi in convenzione in allegato). Per applicare la scontistica dovrà essere inserito nel descrittivo dell'intervento il codice dedicato",
+                details: "Scontistica 10% per dipendenti Wind Tre",
+                notes: "Listino aggiornato e proposte servizi mobility. Convenzione in fase di finalizzazione",
+                discount: "10%"
+            },
+            {
+                company: "BANCA D'ITALIA",
+                location: "ROMA",
+                status: "pending",
+                content: "Scontistica del 10% sul nostro listino al pubblico Doctorbike. Su tutti gli interventi che i dipendenti e associati prenoteranno tramite l'App Doctorbike nelle nostre ciclofficine, su strada, a domicilio o in sede aziendale garantiamo il 10% di sconto al netto di Iva, ricambi e costi di chiamata (listino in convenzione allegato). Per applicare la scontistica dovrà essere inserito nel descrittivo dell'intervento il codice BANCA D'ITALIA",
+                details: "Scontistica 10% per dipendenti Banca d'Italia",
+                notes: "Listino aggiornato e proposte servizi mobility. In attesa di conferma finale",
+                discount: "10%"
+            },
+            {
+                company: "HUAWEI",
+                location: "ROMA",
+                status: "pending",
+                content: "Su tutti gli interventi che i dipendenti, studenti e familiari degli stessi (parenti stretti) prenoteranno tramite l'App Doctorbike nelle nostre ciclofficine, su strada, c/o il domicilio del dipendente o in sede aziendale garantiamo il 20% di sconto al netto di Iva e ricambi (vedi listino di riferimento). Per applicare la scontistica dovrà essere inserito nel descrittivo dell'intervento il codice HUAWEI",
+                details: "Scontistica 20% per dipendenti e familiari Huawei",
+                notes: "Listino aggiornato e proposte servizi mobility. Convenzione estesa a familiari",
+                discount: "20%"
+            },
+            {
+                company: "ACSI",
+                location: "ROMA",
+                status: "pending",
+                content: "Scontistica del 10% sul nostro listino al pubblico Doctorbike. Su tutti gli interventi che i dipendenti e associati prenoteranno tramite l'App Doctorbike nelle nostre ciclofficine, su strada, a domicilio o in sede aziendale garantiamo il 10% di sconto al netto di Iva, ricambi e costi di chiamata (listino in convenzione allegato). Per applicare la scontistica dovrà essere inserito nel descrittivo dell'intervento il codice PROMO + ACSI",
+                details: "Scontistica 10% per associati ACSI",
+                notes: "Listino aggiornato e proposte servizi mobility. Codice: PROMO + ACSI",
+                discount: "10%"
+            },
+            {
+                company: "AICS",
+                location: "ROMA",
+                status: "pending",
+                content: "Scontistica del 10% sul nostro listino al pubblico Doctorbike. Su tutti gli interventi che i dipendenti e associati prenoteranno tramite l'App Doctorbike nelle nostre ciclofficine, su strada, a domicilio o in sede aziendale garantiamo il 10% di sconto al netto di Iva, ricambi e costi di chiamata (listino in convenzione allegato). Per applicare la scontistica dovrà essere inserito nel descrittivo dell'intervento il codice PROMO + AICS",
+                details: "Scontistica 10% per associati AICS",
+                notes: "Listino aggiornato e proposte servizi mobility. Codice: PROMO + AICS",
+                discount: "10%"
+            },
+            {
+                company: "MEF MINISTERO FINANZE",
+                location: "ROMA",
+                status: "pending",
+                content: "Scontistica del 20% sul nostro listino al pubblico Doctorbike. Su tutti gli interventi che i dipendenti e associati prenoteranno tramite l'App Doctorbike nelle nostre ciclofficine, su strada, a domicilio o in sede aziendale garantiamo il 20% di sconto al netto di Iva, ricambi e costi di chiamata (listino in convenzione allegato). Per applicare la scontistica dovrà essere inserito nel descrittivo dell'intervento il codice PROMO + MEF",
+                details: "Scontistica 20% per dipendenti MEF",
+                notes: "Listino aggiornato 20%. Convenzione ministeriale in valutazione",
+                discount: "20%"
+            },
+            {
+                company: "CROCE ROSSA ITALIANA",
+                location: "ROMA",
+                status: "pending",
+                content: "Convenzione per volontari e dipendenti Croce Rossa Italiana. Scontistica del 10% su tutti i servizi di manutenzione e riparazione biciclette presso ciclofficine Doctorbike. Possibilità di interventi presso sedi CRI con supplementi dedicati",
+                details: "Scontistica 10% per volontari e dipendenti CRI",
+                notes: "Convenzione in fase di definizione. Estesa a volontari e dipendenti",
+                discount: "10%"
+            },
+            {
+                company: "CONFCOMMERCIO",
+                location: "ROMA",
+                status: "pending",
+                content: "Convenzione Confcommercio per commercianti e associati. Scontistica dedicata su tutti i servizi di manutenzione biciclette con possibilità di interventi presso punti vendita associati. Tariffa speciale per flotte aziendali",
+                details: "Scontistica per commercianti associati",
+                notes: "Listino aggiornato e proposte servizi mobility. Tariffe speciali per flotte",
+                discount: "10%"
+            },
+            {
+                company: "SISAL",
+                location: "ROMA",
+                status: "pending",
+                content: "Convenzione Sisal per dipendenti delle sedi di Roma e Milano. Scontistica del 10% su tutti i servizi di manutenzione e riparazione biciclette con possibilità di interventi aziendali presso entrambe le sedi",
+                details: "Scontistica 10% dipendenti Sisal Roma/Milano",
+                notes: "Convenzione multi-sede in valutazione. Servizi presso sedi Roma e Milano",
+                discount: "10%"
+            },
+            {
+                company: "NURSIND",
+                location: "ROMA",
+                status: "pending",
+                content: "Convenzione NURSIND (Sindacato Infermieri) per iscritti. Scontistica del 10% su tutti i servizi di manutenzione biciclette presso ciclofficine Doctorbike. Convenzione sindacale dedicata al personale sanitario",
+                details: "Scontistica 10% per iscritti NURSIND",
+                notes: "Convenzione sindacale infermieri in definizione. Dedicata al personale sanitario",
+                discount: "10%"
+            },
+            {
+                company: "SVICOM",
+                location: "ROMA",
+                status: "pending",
+                content: "Convenzione SVICOM per dipendenti. Scontistica del 10% su tutti i servizi di manutenzione e riparazione biciclette con possibilità di interventi presso sede aziendale. Servizi dedicati per mobilità aziendale",
+                details: "Scontistica 10% dipendenti SVICOM",
+                notes: "Servizi presso sede aziendale. Mobilità aziendale dedicata",
+                discount: "10%"
+            },
+            {
+                company: "SACE",
+                location: "ROMA",
+                status: "pending",
+                content: "Convenzione SACE per dipendenti. Scontistica del 10% su tutti i servizi di manutenzione e riparazione biciclette presso ciclofficine Doctorbike e interventi aziendali. Possibilità di pacchetti dedicati per mobility management",
+                details: "Scontistica 10% dipendenti SACE",
+                notes: "Convenzione aziendale in definizione. Pacchetti mobility management disponibili",
+                discount: "10%"
+            },
+            {
+                company: "UNIVERSITA TOR VERGATA",
+                location: "ROMA",
+                status: "pending",
+                content: "Convenzione per la comunità universitaria di Tor Vergata. Scontistica del 10% su tutti i servizi di manutenzione biciclette per studenti, docenti e personale universitario. Possibilità di servizi presso campus universitario",
+                details: "Scontistica 10% comunità universitaria",
+                notes: "Convenzione universitaria in definizione. Servizi presso campus disponibili",
+                discount: "10%"
+            },
+            {
+                company: "UNIVERSITA ROMA TRE",
+                location: "ROMA",
+                status: "pending",
+                content: "Convenzione per la comunità universitaria di Roma Tre. Scontistica del 10% su tutti i servizi di manutenzione biciclette per studenti, docenti e personale universitario. Integrazione con progetti di mobilità sostenibile dell'ateneo",
+                details: "Scontistica 10% comunità universitaria",
+                notes: "Convenzione universitaria in valutazione. Integrazione con progetti mobilità sostenibile",
+                discount: "10%"
+            }
+        ];
+
+        let filteredConventions = [...conventions];
+        let currentStatusFilter = 'all';
+
+        function renderTable() {
+            const tableBody = document.getElementById('tableBody');
+            const noResults = document.getElementById('noResults');
+            const table = document.getElementById('conventionsTable');
+            
+            tableBody.innerHTML = '';
+            
+            if (filteredConventions.length === 0) {
+                table.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+            
+            table.classList.remove('hidden');
+            noResults.classList.add('hidden');
+            
+            filteredConventions.forEach((convention, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="company-name">
+                            <div class="company-logo">${convention.company.charAt(0)}</div>
+                            <span>${convention.company}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="location-badge">${convention.location}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${convention.status}">
+                            ${convention.status === 'confirmed' ? 'Confermata' : 'In Attesa'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="discount-highlight">${convention.discount}</span>
+                    </td>
+                    <td>
+                        <div class="content-preview" id="preview-${index}">
+                            ${convention.content.substring(0, 100)}...
+                        </div>
+                        <button class="expand-btn" onclick="toggleContent(${index})">Espandi</button>
+                        <div class="expanded-content" id="expanded-${index}">
+                            <strong>Contenuto completo:</strong><br>
+                            ${convention.content}<br><br>
+                            <strong>Dettagli:</strong><br>
+                            ${convention.details}
+                        </div>
+                    </td>
+                    <td>
+                        <small>${convention.notes.substring(0, 80)}${convention.notes.length > 80 ? '...' : ''}</small>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function toggleContent(index) {
+            const preview = document.getElementById(`preview-${index}`);
+            const expanded = document.getElementById(`expanded-${index}`);
+            const btn = preview.nextElementSibling;
+            
+            if (expanded.style.display === 'none' || expanded.style.display === '') {
+                expanded.style.display = 'block';
+                preview.style.display = 'none';
+                btn.textContent = 'Riduci';
+            } else {
+                expanded.style.display = 'none';
+                preview.style.display = 'block';
+                btn.textContent = 'Espandi';
+            }
+        }
+
+        function updateStats() {
+            const total = conventions.length;
+            const filtered = filteredConventions.length;
+            const confirmed = conventions.filter(c => c.status === 'confirmed').length;
+            const pending = conventions.filter(c => c.status === 'pending').length;
+            const roma = conventions.filter(c => c.location.includes('ROMA')).length;
+            const italia = conventions.filter(c => c.location.includes('ITALIA')).length;
+            
+            document.getElementById('totalConventions').textContent = filtered;
+            document.getElementById('confirmedConventions').textContent = confirmed;
+            document.getElementById('pendingConventions').textContent = pending;
+            document.getElementById('romaConventions').textContent = roma;
+            document.getElementById('italiaConventions').textContent = italia;
+        }
+
+        function filterConventions() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const locationFilter = document.getElementById('locationFilter').value;
+            const discountFilter = document.getElementById('discountFilter').value;
+            
+            filteredConventions = conventions.filter(convention => {
+                const matchesSearch = convention.company.toLowerCase().includes(searchTerm) ||
+                                    convention.content.toLowerCase().includes(searchTerm);
+                
+                const matchesLocation = !locationFilter || convention.location.includes(locationFilter);
+                
+                const matchesDiscount = !discountFilter || convention.discount === discountFilter;
+                
+                const matchesStatus = currentStatusFilter === 'all' || convention.status === currentStatusFilter;
+                
+                return matchesSearch && matchesLocation && matchesDiscount && matchesStatus;
+            });
+            
+            renderTable();
+            updateStats();
+        }
+
+        function exportToCSV() {
+            let csv = 'Azienda,Località,Stato,Sconto,Contenuto,Note\n';
+            
+            filteredConventions.forEach(conv => {
+                const row = [
+                    `"${conv.company}"`,
+                    `"${conv.location}"`,
+                    `"${conv.status === 'confirmed' ? 'Confermata' : 'In Attesa'}"`,
+                    `"${conv.discount}"`,
+                    `"${conv.content.replace(/"/g, '""')}"`,
+                    `"${conv.notes.replace(/"/g, '""')}"`
+                ].join(',');
+                csv += row + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'convenzioni_doctorbike.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterConventions);
+        document.getElementById('locationFilter').addEventListener('change', filterConventions);
+        document.getElementById('discountFilter').addEventListener('change', filterConventions);
+
+        document.querySelectorAll('.status-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentStatusFilter = this.dataset.status;
+                filterConventions();
+            });
+        });
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTable();
+            updateStats();
+        });
+    </script>
+</body>
+</html>
+            
